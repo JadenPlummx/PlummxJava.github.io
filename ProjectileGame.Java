@@ -125,3 +125,84 @@ System.out.println("Welcome to the Projectile Motion Game!");
         input.nextLine();
         return angle;
     }
+
+// Calculates where the projectile lands
+    public static double getShot(double startingX, double gravity) {
+
+        double power = getPower();
+        double angle = getAngle();
+
+        double angleRadians = Math.toRadians(angle);
+
+        double verticalVelocity = power * Math.sin(angleRadians);
+        double horizontalVelocity = power * Math.cos(angleRadians);
+
+        // Time until projectile lands
+        double time = (2 * verticalVelocity) / gravity;
+
+        if (time < 0) {
+            time = 0;
+        }
+
+        double landingX = (horizontalVelocity * time) + startingX;
+
+        return landingX;
+    }
+
+    // Runs one full game and returns the winner
+    public static int runGame(double gravity, double minX, double maxX, double hitDistance) {
+
+        double player1X = minX + random.nextDouble() * (maxX - minX);
+        double player2X = minX + random.nextDouble() * (maxX - minX);
+
+        int currentPlayer = 1;
+        int winner = 0;
+
+        // Ensure players are not too close
+        while (Math.abs(player1X - player2X) < hitDistance) {
+            player2X = minX + random.nextDouble() * (maxX - minX);
+        }
+
+        System.out.println("New game started!");
+        System.out.printf("%s is at x = %.2f%n", player1Name, player1X);
+        System.out.printf("%s is at x = %.2f%n%n", player2Name, player2X);
+
+        while (winner == 0) {
+
+            double shotX;
+            double targetX;
+
+            if (currentPlayer == 1) {
+
+                System.out.println(player1Name + "'s turn.");
+                shotX = getShot(player1X, gravity);
+                targetX = player2X;
+
+            } else {
+
+                System.out.println(player2Name + "'s turn.");
+                shotX = getShot(player2X, gravity);
+                targetX = player1X;
+            }
+
+            System.out.printf("Shot landed at x = %.2f%n", shotX);
+
+            if (Math.abs(shotX - targetX) < hitDistance) {
+
+                winner = currentPlayer;
+
+            } else {
+
+                System.out.println("Miss!\n");
+
+                if (currentPlayer == 1) {
+                    currentPlayer = 2;
+                } else {
+                    currentPlayer = 1;
+                }
+            }
+        }
+
+        return winner;
+    }
+}
